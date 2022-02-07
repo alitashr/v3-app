@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type {Node} from 'react';
 import {Dimensions} from 'react-native';
 
@@ -30,14 +30,30 @@ import {
 import WebView from 'react-native-webview';
 
 const App: () => Node = () => {
+  const iframeWidth = Dimensions.get('window').width; //Math.round(Dimensions.get('window').width);
+  const iframeHeight = Dimensions.get('window').height; //Math.round(Dimensions.get('window').height);
+ 
+  const [iframeWid,setIframeWid ] = useState(iframeWidth);
+  const [iframeHgt,setIframeHgt ] = useState(iframeHeight);
+  
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-  const iframeWidth = Math.round(Dimensions.get('window').width);
-  const iframeHeight = Math.round(Dimensions.get('window').height);
-  console.log("isDarkMode", isDarkMode)
+  console.log("isDarkMode", isDarkMode);
+
+  useEffect(() => {
+    Dimensions.addEventListener('change', ({window:{width,height}})=>{
+      setIframeWid(width);
+      setIframeHgt(height);
+      // if (width<height) {
+      //   //setOrientation("PORTRAIT");
+      // } else {
+      //   //setOrientation("LANDSCAPE")
+      // }
+    })
+
+  }, []);
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -52,7 +68,7 @@ const App: () => Node = () => {
           <WebView
             originWhitelist={['*']}
             source={{uri: 'https://v3.explorug.com/explorug.html?page=wovenedge&pageview=app'}}
-            style={{height: iframeHeight, width: iframeWidth}}
+            style={{height: iframeHgt, width: iframeWid}}
           />
         </View>
       </ScrollView>
