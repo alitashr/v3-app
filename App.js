@@ -30,8 +30,11 @@ import {
 import WebView from 'react-native-webview';
 
 const App: () => Node = () => {
-  const iframeWidth = Dimensions.get('window').width; //Math.round(Dimensions.get('window').width);
-  const iframeHeight = Dimensions.get('window').height; //Math.round(Dimensions.get('window').height);
+    const window = Dimensions.get('window');
+    const screen = Dimensions.get('screen');
+    
+  const iframeWidth = window.width; //Math.round(Dimensions.get('window').width);
+  const iframeHeight = window.height; //Math.round(Dimensions.get('window').height);
  
   const [iframeWid,setIframeWid ] = useState(iframeWidth);
   const [iframeHgt,setIframeHgt ] = useState(iframeHeight);
@@ -43,7 +46,7 @@ const App: () => Node = () => {
   console.log("isDarkMode", isDarkMode);
 
   useEffect(() => {
-    Dimensions.addEventListener('change', ({window:{width,height}})=>{
+      Dimensions.addEventListener('change', ({window:{width,height}})=>{
       setIframeWid(width);
       setIframeHgt(height);
       // if (width<height) {
@@ -54,6 +57,12 @@ const App: () => Node = () => {
     })
 
   }, []);
+  const injectJs = `
+  const meta = document.createElement('meta'); 
+  meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1'); 
+  meta.setAttribute('name', 'viewport'); 
+  document.getElementsByTagName('head')[0].appendChild(meta); 
+  `
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -64,11 +73,13 @@ const App: () => Node = () => {
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          flex: 1
           }}>
           <WebView
             originWhitelist={['*']}
             source={{uri: 'https://v3.explorug.com/explorug.html?page=wovenedge&pageview=app'}}
-            style={{height: iframeHgt, width: iframeWid}}
+            style={{height: iframeHgt, width: iframeWid, resizeMode: 'cover', flex: 1 }}
+            
           />
         </View>
       </ScrollView>
